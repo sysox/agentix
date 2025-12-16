@@ -7,22 +7,60 @@ import sys
 from kernel.registry import AgentRegistry
 from kernel.context import ExecutionContext
 from kernel.runner import run_agent
+from kernel.proposals import ProposalManager
 
 
-def usage() -> None:
-    print("Usage: python cli.py <agent_id|orchestrated> <task>")
+
+def usage():
+    print("Usage:")
+    print("  python cli.py <agent_id> <task>")
+    print("  python cli.py proposals")
+    print("  python cli.py approve <agent_id_vX>")
+    print("  python cli.py reject <agent_id_vX>")
     sys.exit(1)
 
 
 def main() -> None:
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         usage()
 
     mode = sys.argv[1]
-    task_text = " ".join(sys.argv[2:])
+
+    # --- proposal management ---
+    if mode in {"proposals", "approve", "reject"}:
+        pm = ProposalManager()
+
+        if mode == "proposals":
+            props = pm.list_proposals()
+            if not props:
+                print("[agentix] No proposed agents")
+            else:
+                print("[agentix] Proposed agents:")
+                for p in props:
+                    print(" ", p)
+            return
+
+        if len(sys.argv) != 3:
+            usage()
+
+        agent_id = sys.argv[2]
+
+        if mode == "approve":
+            pm.approve(agent_id)
+            print(f"[agentix] Approved {agent_id}")
+            return
+
+        if mode == "reject":
+            pm.reject(agent_id)
+            print(f"[agentix] Rejected {agent_id}")
+            return
 
     # --- ORCHESTRATED MODE ---
     if mode == "orchestrated":
+        if len(sys.argv) < 3:
+            usage()
+
+        task_text = " ".join(sys.argv[2:])
         from kernel.orchestration import run_orchestrated_task
 
         ctx = ExecutionContext(agent_id="orchestrated")
@@ -40,6 +78,11 @@ def main() -> None:
         return
 
     # --- SINGLE AGENT MODE ---
+    if len(sys.argv) < 3:
+        usage()
+
+    task_text = " ".join(sys.argv[2:])
+
     registry = AgentRegistry()
     try:
         spec = registry.load(mode)

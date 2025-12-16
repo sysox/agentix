@@ -1,0 +1,18 @@
+evolution:
+  write_location: agents/archive
+  mode: propose        # off | propose | auto
+  max_new_versions: 1  # per run
+  allowed_agents:
+    - summarizer
+    - reflector
+    - orchestrator
+  blocked_agents:
+    - evaluator
+  min_score_delta: 0.05
+
+memory:
+  max_files: 50
+  prune_enabled: true
+
+safety:
+  require_manual_approval: true

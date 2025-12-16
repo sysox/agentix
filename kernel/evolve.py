@@ -1,61 +1,23 @@
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
+
 import yaml
 
 from kernel.registry import AgentSpec
+from kernel.governance import Governance
+
+
+# ---------------------------------------------------------------------------
+# helpers
+# ---------------------------------------------------------------------------
 
 def base_agent_id(agent_id: str) -> str:
+    """
+    Strip version suffix: coder_v0.3 -> coder
+    """
     return agent_id.split("_v")[0]
 
-def evolve_agent(
-    spec: AgentSpec,
-    mutation: dict,
-    agents_dir: Path = Path("agents"),
-) -> AgentSpec:
-    """
-    Create a new evolved agent spec from an existing one.
-    Mutation is a partial override dict.
-    """
-
-    data = {
-        "role": spec.role,
-        "description": spec.description,
-        "prompt": spec.prompt,
-        "tools": spec.tools,
-        "limits": spec.limits,
-        "metadata": deepcopy(spec.metadata),
-    }
-
-    # update version
-    old_version = data["metadata"].get("version", "0.0")
-    data["metadata"]["parent"] = spec.agent_id
-    data["metadata"]["version"] = bump_version(old_version)
-    data["metadata"]["evolved_at"] = datetime.utcnow().isoformat()
-
-    # apply mutation
-    deep_update(data, mutation)
-
-    # new agent id
-    base_id = base_agent_id(spec.agent_id)
-    new_id = f"{base_id}_v{data['metadata']['version']}"
-    path = agents_dir / f"{new_id}.yaml"
-
-    with path.open("w", encoding="utf-8") as f:
-        yaml.safe_dump(data, f, sort_keys=False)
-
-    return AgentSpec(
-        agent_id=new_id,
-        role=data["role"],
-        description=data["description"],
-        prompt=data["prompt"],
-        tools=data.get("tools", []),
-        limits=data.get("limits", {}),
-        metadata=data.get("metadata", {}),
-    )
-
-
-# ------------------------------------------------------------------
 
 def bump_version(version: str) -> str:
     try:
@@ -66,8 +28,79 @@ def bump_version(version: str) -> str:
 
 
 def deep_update(target: dict, patch: dict):
+    """
+    Recursively update dicts.
+    """
     for k, v in patch.items():
         if isinstance(v, dict) and isinstance(target.get(k), dict):
             deep_update(target[k], v)
         else:
             target[k] = v
+
+
+# ---------------------------------------------------------------------------
+# evolution
+# ---------------------------------------------------------------------------
+
+def evolve_agent(
+    spec: AgentSpec,
+    mutation: dict,
+    agents_dir: Path = Path("agents"),
+) -> AgentSpec:
+    """
+    Create a new evolved agent spec from an existing one.
+
+    - prompt-only mutation (via `mutation`)
+    - governance-aware
+    - versioned, immutable lineage
+    """
+
+    gov = Governance.load()
+
+    # --- governance: evolution disabled ---
+    if gov.evolution_mode == "off":
+        return spec
+
+    # --- base data ---
+    data = {
+        "role": spec.role,
+        "description": spec.description,
+        "prompt": spec.prompt,
+        "tools": spec.tools,
+        "limits": spec.limits,
+        "metadata": deepcopy(spec.metadata),
+    }
+
+    # --- versioning ---
+    old_version = data["metadata"].get("version", "0.0")
+    new_version = bump_version(old_version)
+
+    data["metadata"]["parent"] = spec.agent_id
+    data["metadata"]["version"] = new_version
+    data["metadata"]["evolved_at"] = datetime.utcnow().isoformat()
+
+    # --- apply mutation ---
+    deep_update(data, mutation)
+
+    # --- governance: proposal mode ---
+    if gov.evolution_mode == "propose":
+        data["metadata"]["status"] = "proposed"
+
+    # --- write new agent file ---
+    base_id = base_agent_id(spec.agent_id)
+    new_id = f"{base_id}_v{new_version}"
+    path = agents_dir / f"{new_id}.yaml"
+
+    with path.open("w", encoding="utf-8") as f:
+        yaml.safe_dump(data, f, sort_keys=False)
+
+    # --- return new spec (may or may not be auto-selected later) ---
+    return AgentSpec(
+        agent_id=new_id,
+        role=data["role"],
+        description=data["description"],
+        prompt=data["prompt"],
+        tools=data.get("tools", []),
+        limits=data.get("limits", {}),
+        metadata=data.get("metadata", {}),
+    )
