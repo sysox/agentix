@@ -1,27 +1,68 @@
-"""
-Agent Runner (Placeholder)
+from typing import Any, Dict
 
-Executes exactly one agent once.
-
-Does NOT:
-- chain agents
-- evaluate results
-- retry or loop
-"""
 from kernel.context import ExecutionContext
-from kernel.spec import AgentSpec
+from kernel.registry import AgentSpec
+from kernel.llm import LLM
+from kernel.evaluator import Evaluator
+from kernel.evolver import Evolver
 
 
 def run_agent(
     spec: AgentSpec,
-    task: dict,
-    context: ExecutionContext
-) -> dict:
-    context.log(f"Running agent: {spec.id}")
-    context.log("Execution stub – no logic implemented")
+    task: Dict[str, Any],
+    context: ExecutionContext,
+) -> Dict[str, Any]:
 
-    return {
-        "status": "NOT_IMPLEMENTED",
-        "agent": spec.id,
-        "version": spec.version,
+    context.log(f"Running agent: {spec.agent_id}")
+
+    # prompt
+    prompt = _build_prompt(spec, task)
+    context.write_prompt(prompt)
+    context.log("Prompt written")
+
+    # LLM
+    llm = LLM()
+    context.log(f"LLM mode: {llm.mode}")
+
+    response = llm.complete(prompt)
+    context.log("LLM completed")
+
+    output = {
+        "agent_id": spec.agent_id,
+        "role": spec.role,
+        "task": task,
+        "response": response,
     }
+
+    # evaluation
+    evaluator = Evaluator()
+    evaluation = evaluator.evaluate(spec, task, output)
+    context.write_evaluation(evaluation)
+    context.log(f"Evaluation score: {evaluation['score']}")
+
+    output["evaluation"] = evaluation
+
+    # evolution hook
+    evolver = Evolver()
+    evolved_spec = evolver.evolve(spec, evaluation)
+
+    metadata = {
+        "agent_id": spec.agent_id,
+        "evolved_agent": evolved_spec.agent_id
+        if evolved_spec.agent_id != spec.agent_id
+        else None,
+    }
+    context.write_metadata(metadata)
+
+    if metadata["evolved_agent"]:
+        context.log(f"Evolved agent created: {metadata['evolved_agent']}")
+
+    return output
+
+
+def _build_prompt(spec: AgentSpec, task: Dict[str, Any]) -> str:
+    return f"""{spec.prompt}
+
+TASK:
+{task.get("task", "")}
+"""

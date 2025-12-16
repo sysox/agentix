@@ -1,10 +1,7 @@
-"""
-Tool Base (Placeholder)
+from kernel.tools.filesystem import FileSystemTool
 
-A tool is a bounded capability granted to agents.
 
-Tools:
-- have explicit permissions
-- have side effects
-- are fully logged
-"""
+TOOLS = {
+    "filesystem.read": FileSystemTool().read,
+    "filesystem.write": FileSystemTool().write,
+}

@@ -14,3 +14,12 @@ Thumbs.db
 # Logs / temp
 *.log
 tmp/
+
+# runtime artifacts
+runs/
+
+# virtual environments
+.venv/
+# local python envs
+env/
+venv/

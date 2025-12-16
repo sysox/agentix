@@ -1,39 +1,66 @@
 """
-CLI Entry Point (Placeholder)
+CLI Entry Point for agentix
 
-Future responsibilities:
-- load agents
-- execute runs
-- manage traces
+Usage:
+    python cli.py <agent_id> <task>
+
+Example:
+    python cli.py coder "implement agent registry"
 """
+
 import sys
 from kernel.registry import AgentRegistry
 from kernel.context import ExecutionContext
 from kernel.runner import run_agent
 
 
-def main():
+def usage() -> None:
+    print("Usage: python cli.py <agent_id> <task>")
+    sys.exit(1)
+
+
+def main() -> None:
+    # --- parse arguments ---
     if len(sys.argv) < 3:
-        print("Usage: python cli.py <agent_id> <task>")
-        sys.exit(1)
+        usage()
 
     agent_id = sys.argv[1]
-    task_text = sys.argv[2]
+    task_text = " ".join(sys.argv[2:])  # preserve spaces
 
+    # --- load agent spec ---
     registry = AgentRegistry()
-    spec = registry.load(agent_id)
+    try:
+        spec = registry.load(agent_id)
+    except Exception as e:
+        print(f"[agentix] Failed to load agent '{agent_id}': {e}")
+        sys.exit(2)
 
-    ctx = ExecutionContext(agent_id)
+    # --- create execution context ---
+    ctx = ExecutionContext(agent_id=agent_id)
 
-    task = {"task": task_text}
+    # --- write input ---
+    task = {
+        "task": task_text,
+    }
     ctx.write_input(task)
 
-    output = run_agent(spec, task, ctx)
-    ctx.write_output(output)
+    # --- run agent ---
+    try:
+        output = run_agent(spec, task, ctx)
+    except Exception as e:
+        ctx.write_error(str(e))
+        ctx.finalize()
+        print(f"[agentix] Run failed: {e}")
+        sys.exit(3)
 
+    # --- write output ---
+    ctx.write_output(output)
     ctx.finalize()
 
-    print(f"Run completed: {ctx.run_id}")
+    # --- report ---
+    print(f"[agentix] Run completed")
+    print(f"[agentix] agent_id = {agent_id}")
+    print(f"[agentix] run_id   = {ctx.run_id}")
 
 
 if __name__ == "__main__":

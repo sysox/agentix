@@ -1,14 +1,3 @@
-"""
-Execution Context (Placeholder)
-
-Represents a single execution run.
-
-Contains:
-- run identifier
-- timestamps
-- logs
-- artifacts
-"""
 import json
 from pathlib import Path
 from datetime import datetime
@@ -32,10 +21,30 @@ class ExecutionContext:
             json.dumps(data, indent=2)
         )
 
+    def write_prompt(self, prompt: str):
+        (self.run_dir / "prompt.txt").write_text(prompt)
+
     def write_output(self, data: dict):
         (self.run_dir / "output.json").write_text(
             json.dumps(data, indent=2)
         )
+
+    def write_evaluation(self, evaluation: dict):
+        (self.run_dir / "evaluation.json").write_text(
+            json.dumps(evaluation, indent=2)
+        )
+
+    def write_metadata(self, data: dict):
+        (self.run_dir / "metadata.json").write_text(
+            json.dumps(data, indent=2)
+        )
+
+    def write_error(self, error: str):
+        self.log(f"ERROR: {error}")
+        self.write_output({
+            "status": "error",
+            "error": error,
+        })
 
     def finalize(self):
         (self.run_dir / "trace.log").write_text(
