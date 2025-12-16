@@ -1,5 +1,14 @@
-# agentic-kernel
+# agentix
 
-Work in progress.
+Experimental agentic system built from first principles.
 
-Private experimental project.
+Status:
+- architecture defined
+- contracts frozen
+- no executable logic yet
+
+Design goals:
+- explicit control
+- evolvable agents
+- traceable execution
+- resource awareness

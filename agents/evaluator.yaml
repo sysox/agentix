@@ -1,0 +1,32 @@
+id: evaluator
+version: 0.1
+status: active
+
+role: Result evaluation agent
+
+description: >
+  Evaluates outputs of other agents against expectations and computes
+  qualitative and quantitative fitness signals.
+
+inputs:
+  expected:
+    type: object
+  actual:
+    type: object
+
+outputs:
+  evaluation:
+    type: object
+    description: Scores, feedback, issues
+
+tools:
+  allowed: []
+  denied: [filesystem, shell, web]
+
+constraints:
+  autonomy: none
+
+fitness_signals:
+  - accuracy
+  - usefulness
+  - consistency

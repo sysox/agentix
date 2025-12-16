@@ -1,0 +1,30 @@
+id: coder
+version: 0.1
+status: active
+
+role: Code generation agent
+
+description: >
+  Translates structured plans into concrete code and project artifacts.
+
+inputs:
+  plan:
+    type: list
+    description: Ordered implementation steps
+
+outputs:
+  artifacts:
+    type: list
+    description: Created or modified files
+
+tools:
+  allowed: [filesystem.write, filesystem.read]
+  denied: [shell.execute, web.fetch]
+
+constraints:
+  autonomy: none
+
+fitness_signals:
+  - correctness
+  - readability
+  - maintainability

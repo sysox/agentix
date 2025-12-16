@@ -1,0 +1,31 @@
+id: planner
+version: 0.1
+status: active
+
+role: High-level task planner
+
+description: >
+  Decomposes a vague or high-level goal into a structured, ordered plan
+  suitable for execution by other agents.
+
+inputs:
+  goal:
+    type: string
+    description: High-level user goal
+
+outputs:
+  plan:
+    type: list
+    description: Ordered list of steps
+
+tools:
+  allowed: []
+  denied: [filesystem, shell, web]
+
+constraints:
+  autonomy: none
+
+fitness_signals:
+  - clarity
+  - completeness
+  - minimality
