@@ -6,6 +6,19 @@ from kernel.llm import LLM
 from kernel.evaluator import Evaluator
 from kernel.evolver import Evolver
 
+from pathlib import Path
+from kernel.registry import AgentRegistry
+
+
+def load_latest_agent(agent_id: str) -> AgentSpec:
+    reg = AgentRegistry()
+    versions = sorted(
+        Path("agents").glob(f"{agent_id}_v*.yaml"),
+        key=lambda p: p.stem,
+    )
+    if not versions:
+        return reg.load(agent_id)
+    return reg.load(versions[-1].stem)
 
 def run_agent(
     spec: AgentSpec,
@@ -42,9 +55,10 @@ def run_agent(
 
     output["evaluation"] = evaluation
 
-    # evolution hook
+    # evolution hook (CHAINED)
     evolver = Evolver()
-    evolved_spec = evolver.evolve(spec, evaluation)
+    base_spec = load_latest_agent(spec.agent_id)
+    evolved_spec = evolver.evolve(base_spec, evaluation)
 
     metadata = {
         "agent_id": spec.agent_id,

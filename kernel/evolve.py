@@ -5,6 +5,8 @@ import yaml
 
 from kernel.registry import AgentSpec
 
+def base_agent_id(agent_id: str) -> str:
+    return agent_id.split("_v")[0]
 
 def evolve_agent(
     spec: AgentSpec,
@@ -35,7 +37,8 @@ def evolve_agent(
     deep_update(data, mutation)
 
     # new agent id
-    new_id = f"{spec.agent_id}_v{data['metadata']['version']}"
+    base_id = base_agent_id(spec.agent_id)
+    new_id = f"{base_id}_v{data['metadata']['version']}"
     path = agents_dir / f"{new_id}.yaml"
 
     with path.open("w", encoding="utf-8") as f:
