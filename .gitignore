@@ -15,11 +15,19 @@ Thumbs.db
 *.log
 tmp/
 
-# runtime artifacts
-runs/
-
 # virtual environments
 .venv/
 # local python envs
 env/
 venv/
+
+# runtime artifacts
+runs/
+
+# python cache
+__pycache__/
+*.pyc
+
+# bad historical agent versions
+agents/archive/bad_versions/
+
