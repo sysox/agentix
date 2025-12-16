@@ -75,8 +75,25 @@ def run_agent(
 
 
 def _build_prompt(spec: AgentSpec, task: Dict[str, Any]) -> str:
-    return f"""{spec.prompt}
+    parts = [spec.prompt, ""]
 
-TASK:
-{task.get("task", "")}
-"""
+    if "task" in task:
+        parts.append("TASK:")
+        parts.append(task["task"])
+        parts.append("")
+
+    if "purpose" in task:
+        parts.append("PURPOSE:")
+        parts.append(task["purpose"])
+        parts.append("")
+
+    if "memory" in task:
+        parts.append("PAST KNOWLEDGE:")
+        parts.append(task["memory"])
+        parts.append("")
+
+    if "context" in task:
+        parts.append("CURRENT CONTEXT:")
+        parts.append(task["context"])
+
+    return "\n".join(parts)

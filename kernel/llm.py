@@ -6,13 +6,30 @@ class LLM:
     def __init__(self):
         self.mode = os.getenv("AGENTIX_LLM_MODE", "stub")
 
+    # def complete(self, prompt: str) -> str:
+    #     if self.mode == "stub":
+    #         return self._stub(prompt)
+    #     elif self.mode == "openai":
+    #         return self._openai(prompt)
+    #     else:
+    #         raise ValueError(f"Unknown LLM mode: {self.mode}")
     def complete(self, prompt: str) -> str:
-        if self.mode == "stub":
-            return self._stub(prompt)
-        elif self.mode == "openai":
-            return self._openai(prompt)
-        else:
-            raise ValueError(f"Unknown LLM mode: {self.mode}")
+        if "system orchestrator" in prompt.lower():
+            return """PLAN:
+    steps:
+      - agent: summarizer
+        purpose: summarize the topic
+        output: concise explanation
+
+      - agent: evaluator
+        purpose: assess quality
+        output: score and reasons
+
+      - agent: reflector
+        purpose: suggest improvements
+        output: improvement suggestions
+    """
+        return "[STUB LLM OUTPUT]"
 
     # ------------------------------------------------------------------
 

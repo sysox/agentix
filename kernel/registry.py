@@ -111,3 +111,16 @@ class AgentRegistry:
 
         if not isinstance(data.get("metadata", {}), dict):
             raise TypeError("Field 'metadata' must be a mapping")
+
+    def load_best(self, agent_id: str) -> AgentSpec:
+        """
+        Load the latest evolved version if it exists,
+        otherwise load the base agent.
+        """
+        versions = sorted(
+            self.agents_dir.glob(f"{agent_id}_v*.yaml"),
+            key=lambda p: p.stem,
+        )
+        if versions:
+            return self.load(versions[-1].stem)
+        return self.load(agent_id)

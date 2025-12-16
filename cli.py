@@ -1,50 +1,57 @@
 """
 CLI Entry Point for agentix
-
-Usage:
-    python cli.py <agent_id> <task>
-
-Example:
-    python cli.py coder "implement agent registry"
 """
 
 import sys
+
 from kernel.registry import AgentRegistry
 from kernel.context import ExecutionContext
 from kernel.runner import run_agent
 
 
 def usage() -> None:
-    print("Usage: python cli.py <agent_id> <task>")
+    print("Usage: python cli.py <agent_id|orchestrated> <task>")
     sys.exit(1)
 
 
 def main() -> None:
-    # --- parse arguments ---
     if len(sys.argv) < 3:
         usage()
 
-    agent_id = sys.argv[1]
-    task_text = " ".join(sys.argv[2:])  # preserve spaces
+    mode = sys.argv[1]
+    task_text = " ".join(sys.argv[2:])
 
-    # --- load agent spec ---
+    # --- ORCHESTRATED MODE ---
+    if mode == "orchestrated":
+        from kernel.orchestration import run_orchestrated_task
+
+        ctx = ExecutionContext(agent_id="orchestrated")
+        try:
+            run_orchestrated_task(task_text, ctx)
+            ctx.finalize()
+        except Exception as e:
+            ctx.write_error(str(e))
+            ctx.finalize()
+            print(f"[agentix] Orchestrated run failed: {e}")
+            sys.exit(3)
+
+        print("[agentix] Orchestrated run completed")
+        print(f"[agentix] run_id = {ctx.run_id}")
+        return
+
+    # --- SINGLE AGENT MODE ---
     registry = AgentRegistry()
     try:
-        spec = registry.load(agent_id)
+        spec = registry.load(mode)
     except Exception as e:
-        print(f"[agentix] Failed to load agent '{agent_id}': {e}")
+        print(f"[agentix] Failed to load agent '{mode}': {e}")
         sys.exit(2)
 
-    # --- create execution context ---
-    ctx = ExecutionContext(agent_id=agent_id)
+    ctx = ExecutionContext(agent_id=mode)
 
-    # --- write input ---
-    task = {
-        "task": task_text,
-    }
+    task = {"task": task_text}
     ctx.write_input(task)
 
-    # --- run agent ---
     try:
         output = run_agent(spec, task, ctx)
     except Exception as e:
@@ -53,13 +60,11 @@ def main() -> None:
         print(f"[agentix] Run failed: {e}")
         sys.exit(3)
 
-    # --- write output ---
     ctx.write_output(output)
     ctx.finalize()
 
-    # --- report ---
-    print(f"[agentix] Run completed")
-    print(f"[agentix] agent_id = {agent_id}")
+    print("[agentix] Run completed")
+    print(f"[agentix] agent_id = {mode}")
     print(f"[agentix] run_id   = {ctx.run_id}")
 
 

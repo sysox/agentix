@@ -42,7 +42,6 @@ def parse_plan_yaml(yaml_text: str) -> List[Dict[str, str]]:
 
     return steps
 
-
 def run_orchestrated_task(
     task: str,
     context: ExecutionContext,
@@ -67,6 +66,8 @@ def run_orchestrated_task(
     yaml_text = extract_plan_yaml(plan_text)
     steps = parse_plan_yaml(yaml_text)
 
+    memory_text = context.load_knowledge(task, limit=5)
+
     # --- 2. Execute steps sequentially ---
     shared_context = f"TASK:\n{task}\n"
 
@@ -76,7 +77,7 @@ def run_orchestrated_task(
         if agent_id == "orchestrator":
             raise RuntimeError("Orchestrator cannot call itself")
 
-        spec = registry.load(agent_id)
+        spec = registry.load_best(agent_id)
 
         step_task = {
             "task": task,
@@ -84,10 +85,24 @@ def run_orchestrated_task(
             "context": shared_context,
         }
 
+        if memory_text:
+            step_task["memory"] = memory_text
+
         context.log(f"Step {idx}: running {agent_id}")
         output = run_agent(spec, step_task, context)
 
         response = output.get("response", "")
+
+        if agent_id in ("summarizer", "reflector"):
+            context.write_knowledge(agent_id, response)
+
         shared_context += (
             f"\n\nSTEP {idx} ({agent_id} OUTPUT):\n{response}"
         )
+    from kernel.memory import MemoryPruner
+
+    pruner = MemoryPruner()
+    pruner.prune(
+        context.knowledge_dir,
+        context.used_knowledge,
+    )

@@ -1,41 +1,50 @@
-import random
 from typing import Dict, Any
+from kernel.registry import AgentSpec
 
 
 class Mutator:
     """
-    Produces concrete mutations for agent evolution.
+    Prompt-only mutations based on fitness weaknesses.
     """
 
     def mutate(
         self,
-        spec,
+        spec: AgentSpec,
         evaluation: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """
-        Return a mutation dict.
-        """
 
-        mutation: Dict[str, Any] = {}
+        components = evaluation.get("components", {})
+        prompt = spec.prompt.rstrip()
 
-        score = evaluation.get("score", 0.0)
+        additions = []
 
-        # if score is low, strengthen prompt
-        if score < 0.5:
-            mutation["prompt"] = (
-                spec.prompt
-                + "\n\nIMPORTANT:\nBe more explicit and cautious. "
-                + "Double-check correctness before responding."
+        # --- target weaknesses ---
+        if components.get("task_relevance", 1.0) < 0.7:
+            additions.append(
+                "Focus strictly on the given task. "
+                "Do not include unrelated information."
             )
 
-        # small random stylistic variation
-        mutation.setdefault("metadata", {})
-        mutation["metadata"]["mutation"] = random.choice(
-            [
-                "prompt_strengthen",
-                "prompt_clarify",
-                "style_adjust",
-            ]
+        if components.get("structure", 1.0) < 0.7:
+            additions.append(
+                "Structure your output clearly using paragraphs or lists."
+            )
+
+        if components.get("memory_use", 1.0) < 0.7:
+            additions.append(
+                "Reuse relevant information from past knowledge when available."
+            )
+
+        if not additions:
+            return {}  # nothing to mutate
+
+        new_prompt = (
+            prompt
+            + "\n\n"
+            + "EVOLUTION NOTES:\n"
+            + "\n".join(f"- {a}" for a in additions)
         )
 
-        return mutation
+        return {
+            "prompt": new_prompt
+        }
