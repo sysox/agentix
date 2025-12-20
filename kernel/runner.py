@@ -1,99 +1,70 @@
-from typing import Any, Dict
+# kernel/runner.py
 
-from kernel.context import ExecutionContext
-from kernel.registry import AgentSpec
-from kernel.llm import LLM
-from kernel.evaluator import Evaluator
-from kernel.evolver import Evolver
-
-from pathlib import Path
-from kernel.registry import AgentRegistry
+from kernel.run import Run, RunState
+from kernel.pricing import compute_cost_usd
+from datetime import datetime
 
 
-def load_latest_agent(agent_id: str) -> AgentSpec:
-    reg = AgentRegistry()
-    versions = sorted(
-        Path("agents").glob(f"{agent_id}_v*.yaml"),
-        key=lambda p: p.stem,
-    )
-    if not versions:
-        return reg.load(agent_id)
-    return reg.load(versions[-1].stem)
+class Runner:
+    def __init__(self, agent, run: Run):
+        self.agent = agent
+        self.run = run
 
-def run_agent(
-    spec: AgentSpec,
-    task: Dict[str, Any],
-    context: ExecutionContext,
-) -> Dict[str, Any]:
+    def execute(self) -> Run:
+        try:
+            self.run.set_state(RunState.RUNNING)
 
-    context.log(f"Running agent: {spec.agent_id}")
+            # === agent execution ===
+            # This is pseudocode – plug into your existing logic
 
-    # prompt
-    prompt = _build_prompt(spec, task)
-    context.write_prompt(prompt)
-    context.log("Prompt written")
+            result = self._run_agent()
 
-    # LLM
-    llm = LLM()
-    context.log(f"LLM mode: {llm.mode}")
+            # store artifacts
+            for name, value in result.get("artifacts", {}).items():
+                self.run.artifacts[name] = value
 
-    response = llm.complete(prompt)
-    context.log("LLM completed")
+            self.run.set_state(RunState.COMPLETED)
+            return self.run
 
-    output = {
-        "agent_id": spec.agent_id,
-        "role": spec.role,
-        "task": task,
-        "response": response,
-    }
+        except Exception as e:
+            self.run.set_state(RunState.FAILED)
+            self.run.artifacts["error"] = str(e)
+            return self.run
 
-    # evaluation
-    evaluator = Evaluator()
-    evaluation = evaluator.evaluate(spec, task, output)
-    context.write_evaluation(evaluation)
-    context.log(f"Evaluation score: {evaluation['score']}")
+    def _run_agent(self) -> dict:
+        """
+        Run the agent once and account for cost.
+        """
 
-    output["evaluation"] = evaluation
+        # Example: single LLM call
+        response = self.agent.call_llm(self.run.task)
 
-    # evolution hook (CHAINED)
-    evolver = Evolver()
-    base_spec = load_latest_agent(spec.agent_id)
-    evolved_spec = evolver.evolve(base_spec, evaluation)
+        input_tokens = response.input_tokens
+        output_tokens = response.output_tokens
+        model_name = response.model_name
 
-    metadata = {
-        "agent_id": spec.agent_id,
-        "evolved_agent": evolved_spec.agent_id
-        if evolved_spec.agent_id != spec.agent_id
-        else None,
-    }
-    context.write_metadata(metadata)
+        # exact USD cost
+        cost = compute_cost_usd(
+            model_name=model_name,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
 
-    if metadata["evolved_agent"]:
-        context.log(f"Evolved agent created: {metadata['evolved_agent']}")
+        self.run.cost_usd += cost
 
-    return output
+        # enforce run-level budget
+        if (
+            self.run.constraints.max_cost_usd is not None
+            and self.run.cost_usd > self.run.constraints.max_cost_usd
+        ):
+            raise RuntimeError(
+                f"Run budget exceeded: "
+                f"{self.run.cost_usd:.4f} USD > "
+                f"{self.run.constraints.max_cost_usd:.4f} USD"
+            )
 
-
-def _build_prompt(spec: AgentSpec, task: Dict[str, Any]) -> str:
-    parts = [spec.prompt, ""]
-
-    if "task" in task:
-        parts.append("TASK:")
-        parts.append(task["task"])
-        parts.append("")
-
-    if "purpose" in task:
-        parts.append("PURPOSE:")
-        parts.append(task["purpose"])
-        parts.append("")
-
-    if "memory" in task:
-        parts.append("PAST KNOWLEDGE:")
-        parts.append(task["memory"])
-        parts.append("")
-
-    if "context" in task:
-        parts.append("CURRENT CONTEXT:")
-        parts.append(task["context"])
-
-    return "\n".join(parts)
+        return {
+            "artifacts": {
+                "result": response.text
+            }
+        }
