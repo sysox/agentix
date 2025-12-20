@@ -6,6 +6,7 @@ import yaml
 
 from kernel.registry import AgentSpec
 from kernel.governance import Governance
+from kernel.approval import pause_for_approval
 
 
 # ---------------------------------------------------------------------------
@@ -45,6 +46,7 @@ def deep_update(target: dict, patch: dict):
 def evolve_agent(
     spec: AgentSpec,
     mutation: dict,
+    run,                       # 🔴 IMPORTANT: run is required for approval
     agents_dir: Path = Path("agents"),
 ) -> AgentSpec:
     """
@@ -53,6 +55,7 @@ def evolve_agent(
     - prompt-only mutation (via `mutation`)
     - governance-aware
     - versioned, immutable lineage
+    - PAUSES execution if proposal is created
     """
 
     gov = Governance.load()
@@ -83,8 +86,10 @@ def evolve_agent(
     deep_update(data, mutation)
 
     # --- governance: proposal mode ---
+    is_proposal = False
     if gov.evolution_mode == "propose":
         data["metadata"]["status"] = "proposed"
+        is_proposal = True
 
     # --- write new agent file ---
     base_id = base_agent_id(spec.agent_id)
@@ -93,6 +98,10 @@ def evolve_agent(
 
     with path.open("w", encoding="utf-8") as f:
         yaml.safe_dump(data, f, sort_keys=False)
+
+    # ⛔ KERNEL ENFORCED STOP (AFTER persistence)
+    if is_proposal:
+        pause_for_approval(run)
 
     # --- return new spec (may or may not be auto-selected later) ---
     return AgentSpec(
