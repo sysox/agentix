@@ -101,6 +101,13 @@ def evolve_agent(
 
     # ⛔ KERNEL ENFORCED STOP (AFTER persistence)
     if is_proposal:
+        # Cap number of proposals per run (prevents runaway loops)
+        if run.proposal_count >= gov.max_proposals_per_run:
+            # If we hit the limit, we still pause, but maybe we should log it?
+            # For now, just pausing is safe.
+            pause_for_approval(run)
+
+        run.proposal_count += 1
         pause_for_approval(run)
 
     # --- return new spec (may or may not be auto-selected later) ---

@@ -1,116 +1,44 @@
-from __future__ import annotations
-
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict
 
 import yaml
 
+from kernel.spec import AgentSpec
+from kernel.agent import Agent
 
-# ---------------------------------------------------------------------------
-# AgentSpec
-# ---------------------------------------------------------------------------
 
-@dataclass(frozen=True)
-class AgentSpec:
+class Registry:
     """
-    Immutable specification of an agent loaded from YAML.
-    """
-
-    agent_id: str
-    role: str
-    description: str
-    prompt: str
-
-    tools: List[str] = field(default_factory=list)
-    limits: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-
-# ---------------------------------------------------------------------------
-# AgentRegistry
-# ---------------------------------------------------------------------------
-
-class AgentRegistry:
-    """
-    Loads and validates agent specifications from agents/*.yaml
+    Loads agent specifications from YAML files in agents/.
+    Responsible ONLY for AgentSpec lifecycle (not execution).
     """
 
-    def __init__(self, agents_dir: Path | None = None):
-        self.agents_dir = agents_dir or Path("agents")
+    def __init__(self, agents_dir: Path = Path("agents")):
+        self.agents_dir = agents_dir
 
-        if not self.agents_dir.exists():
-            raise RuntimeError(f"Agents directory not found: {self.agents_dir}")
-
-    # ---------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    # Low-level loaders (AgentSpec only)
+    # ------------------------------------------------------------------
 
     def load(self, agent_id: str) -> AgentSpec:
         """
-        Load agent specification by ID.
+        Load an exact agent spec from agents/<agent_id>.yaml
         """
-        path = self._agent_path(agent_id)
-        data = self._load_yaml(path)
+        path = self.agents_dir / f"{agent_id}.yaml"
+        if not path.exists():
+            raise FileNotFoundError(f"Agent not found: {agent_id}")
 
-        self._validate_schema(agent_id, data)
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
         return AgentSpec(
             agent_id=agent_id,
             role=data["role"],
-            description=data["description"],
-            prompt=data["prompt"],
+            description=data.get("description", ""),
+            prompt=data.get("prompt", ""),
             tools=data.get("tools", []),
             limits=data.get("limits", {}),
             metadata=data.get("metadata", {}),
         )
-
-    # ---------------------------------------------------------------------
-
-    def list_agents(self) -> List[str]:
-        """
-        List available agent IDs.
-        """
-        return sorted(p.stem for p in self.agents_dir.glob("*.yaml"))
-
-    # ---------------------------------------------------------------------
-    # Internal helpers
-    # ---------------------------------------------------------------------
-
-    def _agent_path(self, agent_id: str) -> Path:
-        path = self.agents_dir / f"{agent_id}.yaml"
-        if not path.exists():
-            available = ", ".join(self.list_agents())
-            raise FileNotFoundError(
-                f"Agent '{agent_id}' not found. Available agents: {available}"
-            )
-        return path
-
-    def _load_yaml(self, path: Path) -> Dict[str, Any]:
-        try:
-            with path.open("r", encoding="utf-8") as f:
-                return yaml.safe_load(f) or {}
-        except yaml.YAMLError as e:
-            raise ValueError(f"Invalid YAML in {path}: {e}")
-
-    def _validate_schema(self, agent_id: str, data: Dict[str, Any]) -> None:
-        if not isinstance(data, dict):
-            raise TypeError(f"Agent '{agent_id}' YAML must be a mapping")
-
-        required = ["role", "description", "prompt"]
-        missing = [k for k in required if k not in data]
-
-        if missing:
-            raise ValueError(
-                f"Agent '{agent_id}' missing required fields: {missing}"
-            )
-
-        if not isinstance(data.get("tools", []), list):
-            raise TypeError("Field 'tools' must be a list")
-
-        if not isinstance(data.get("limits", {}), dict):
-            raise TypeError("Field 'limits' must be a mapping")
-
-        if not isinstance(data.get("metadata", {}), dict):
-            raise TypeError("Field 'metadata' must be a mapping")
 
     def load_best(self, agent_id: str) -> AgentSpec:
         """
@@ -124,3 +52,16 @@ class AgentRegistry:
         if versions:
             return self.load(versions[-1].stem)
         return self.load(agent_id)
+
+
+# ----------------------------------------------------------------------
+# Public convenience API (used by CLI / Supervisor)
+# ----------------------------------------------------------------------
+
+def load_agent(agent_id: str) -> Agent:
+    """
+    Load the best available version of an agent and return a runnable Agent.
+    """
+    registry = Registry()
+    spec = registry.load_best(agent_id)
+    return Agent(spec)

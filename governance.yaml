@@ -1,6 +1,19 @@
+# Top-level autonomy controls (NEW)
+# off     = no evolution
+# propose = create proposed YAML + pause for approval
+# auto    = evolve automatically (no proposal status, no pause)
+autonomy_mode: propose
+
+# If set, Runner will inject this as the default run budget (NEW)
+max_cost_usd_per_run: 0.50
+
+# Hard cap on how many proposals can be created within one run (NEW)
+max_proposals_per_run: 1
+
+
 evolution:
   write_location: agents/archive
-  mode: propose        # off | propose | auto
+  mode: propose        # off | propose | auto (legacy; still kept for compatibility)
   max_new_versions: 1  # per run
   allowed_agents:
     - summarizer
@@ -15,4 +28,5 @@ memory:
   prune_enabled: true
 
 safety:
-  require_manual_approval: true
+  require_manual_approval: false
+

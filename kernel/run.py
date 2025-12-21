@@ -38,6 +38,7 @@ class Run:
 
     cost_usd: float = 0.0
     artifacts: Dict[str, str] = field(default_factory=dict)
+    proposal_count: int = 0
 
     created_at: datetime = field(default_factory=datetime.utcnow)
     finished_at: Optional[datetime] = None

@@ -1,12 +1,10 @@
 from typing import Dict, Any
 
 from kernel.registry import AgentSpec
-from kernel.evolve import evolve_agent
+from kernel.evolve import evolve_agent, base_agent_id
 from kernel.mutator import Mutator
 from kernel.policy import EvolutionPolicy
 from kernel.pruner import Pruner
-from kernel.evolve import base_agent_id
-from kernel.evolve import evolve_agent, base_agent_id
 from kernel.approval import pause_for_approval
 
 
@@ -34,7 +32,6 @@ class Evolver:
 
         # ⛔ IMPORTANT: pause execution AFTER proposal is written
         # evolve_agent(...) is assumed to write *_vX.yaml with status: proposed
-        pause_for_approval(run)
+        # pause_for_approval(run) # This is already handled inside evolve_agent if needed
 
         return new_spec
-
