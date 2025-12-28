@@ -98,3 +98,7 @@ See `docs/agent_contract.md` (consider renaming to `AGENT_CONTRACT.md`) for the 
 - `docs/registry.md` — loading agent YAML, spec structure
 - `docs/USER_GUIDE.md` — installation and usage examples
 - `docs/CONTRIBUTING.md` — development workflow and contribution rules
+
+default load: FILES_SPINE.yaml + SYMBOLS_SPINE.yaml
+load FULL only when needed (we’ll add later)
+when editing: prefer leaf + ChangeSet by symbol_id
