@@ -1,0 +1,284 @@
+version: '0.1'
+generated_from: docs/CODE_INDEX.json
+scope: kernel spine (core runtime + governance/evolution)
+files:
+  kernel/run.py:
+    module: kernel.run
+    purpose: ''
+    notes: []
+    imports:
+    - from dataclasses import dataclass, field
+    - from enum import Enum
+    - from typing import Dict, List, Optional
+    - from datetime import datetime
+    - import uuid
+    units:
+    - py:module:kernel.run
+    - py:class:kernel.run.Run
+    - py:method:kernel.run.Run.set_state
+    - py:class:kernel.run.RunConstraints
+    - py:class:kernel.run.RunState
+    - py:function:kernel.run.create_run
+  kernel/run_store.py:
+    module: kernel.run_store
+    purpose: ''
+    notes: []
+    imports:
+    - import json
+    - from dataclasses import asdict, is_dataclass
+    - from datetime import datetime
+    - from pathlib import Path
+    - from typing import Any, Dict
+    - from kernel.run import Run, RunState
+    units:
+    - py:module:kernel.run_store
+    - py:class:kernel.run_store.RunStore
+    - py:method:kernel.run_store.RunStore.__init__
+    - py:method:kernel.run_store.RunStore.save
+    - py:method:kernel.run_store.RunStore.load
+    - py:function:kernel.run_store._json_default
+  kernel/runner.py:
+    module: kernel.runner
+    purpose: Core orchestration/runtime module (high leverage).
+    notes:
+    - Core orchestration/runtime module (high leverage).
+    imports:
+    - from pathlib import Path
+    - from kernel.run import Run, RunState
+    - from kernel.pricing import compute_cost_usd
+    - from kernel.approval import ApprovalRequired
+    - from kernel.action_gate import ActionRequired
+    - from kernel.governance import Governance
+    - from kernel.context import build_project_context
+    - from kernel.run_store import RunStore
+    units:
+    - py:module:kernel.runner
+    - py:class:kernel.runner.Runner
+    - py:method:kernel.runner.Runner.__init__
+    - py:method:kernel.runner.Runner.execute
+    - py:method:kernel.runner.Runner._run_agent
+  kernel/supervisor.py:
+    module: kernel.supervisor
+    purpose: Core orchestration/runtime module (high leverage).
+    notes:
+    - Core orchestration/runtime module (high leverage).
+    imports:
+    - from pathlib import Path
+    - import yaml
+    - from kernel.governance import Governance
+    - from kernel.run import Run, RunState
+    - from kernel.runner import Runner
+    - from kernel.proposals import ProposalManager
+    units:
+    - py:module:kernel.supervisor
+    - py:class:kernel.supervisor.Supervisor
+    - py:method:kernel.supervisor.Supervisor.__init__
+    - py:method:kernel.supervisor.Supervisor.start_run
+    - py:method:kernel.supervisor.Supervisor.can_resume
+    - py:method:kernel.supervisor.Supervisor.list_proposals
+    - py:method:kernel.supervisor.Supervisor.approve
+    - py:method:kernel.supervisor.Supervisor.reject
+    - py:method:kernel.supervisor.Supervisor.get_pending_action
+    - py:method:kernel.supervisor.Supervisor._is_safe_agent_yaml_proposal
+    - py:method:kernel.supervisor.Supervisor.maybe_auto_approve
+  kernel/registry.py:
+    module: kernel.registry
+    purpose: ''
+    notes: []
+    imports:
+    - from pathlib import Path
+    - from typing import Dict
+    - import yaml
+    - from kernel.spec import AgentSpec
+    - from kernel.agent import Agent
+    units:
+    - py:module:kernel.registry
+    - py:class:kernel.registry.Registry
+    - py:method:kernel.registry.Registry.__init__
+    - py:method:kernel.registry.Registry.load
+    - py:method:kernel.registry.Registry.load_best
+    - py:function:kernel.registry.load_agent
+  kernel/agent.py:
+    module: kernel.agent
+    purpose: ''
+    notes: []
+    imports:
+    - from kernel.spec import AgentSpec
+    - from kernel.llm import LLM
+    units:
+    - py:module:kernel.agent
+    - py:class:kernel.agent.Agent
+    - py:method:kernel.agent.Agent.__init__
+    - py:method:kernel.agent.Agent.call_llm
+  kernel/llm.py:
+    module: kernel.llm
+    purpose: ''
+    notes: []
+    imports:
+    - import os
+    - from typing import Optional
+    units:
+    - py:module:kernel.llm
+    - py:class:kernel.llm.LLM
+    - py:method:kernel.llm.LLM.__init__
+    - py:method:kernel.llm.LLM.complete
+    - py:method:kernel.llm.LLM._stub
+    - py:method:kernel.llm.LLM._openai
+  kernel/governance.py:
+    module: kernel.governance
+    purpose: ''
+    notes: []
+    imports:
+    - from __future__ import annotations
+    - from pathlib import Path
+    - from typing import Optional, Set, Any, Dict
+    - import yaml
+    units:
+    - py:module:kernel.governance
+    - py:class:kernel.governance.Governance
+    - py:method:kernel.governance.Governance.__init__
+    - py:method:kernel.governance.Governance.load
+    - py:method:kernel.governance.Governance._derive_autonomy_mode
+    - py:method:kernel.governance.Governance.is_allowed
+  kernel/approval.py:
+    module: kernel.approval
+    purpose: ''
+    notes: []
+    imports:
+    - from kernel.run import RunState
+    units:
+    - py:module:kernel.approval
+    - py:class:kernel.approval.ApprovalRequired
+    - py:function:kernel.approval.pause_for_approval
+  kernel/action_gate.py:
+    module: kernel.action_gate
+    purpose: ''
+    notes: []
+    imports: []
+    units:
+    - py:module:kernel.action_gate
+    - py:class:kernel.action_gate.ActionRequired
+    - py:method:kernel.action_gate.ActionRequired.__init__
+  kernel/actions.py:
+    module: kernel.actions
+    purpose: ''
+    notes: []
+    imports:
+    - from dataclasses import dataclass
+    - from typing import Dict, Any
+    units:
+    - py:module:kernel.actions
+    - py:class:kernel.actions.ActionRequest
+  kernel/policy.py:
+    module: kernel.policy
+    purpose: ''
+    notes: []
+    imports:
+    - from typing import Dict, Any
+    - from pathlib import Path
+    units:
+    - py:module:kernel.policy
+    - py:class:kernel.policy.EvolutionPolicy
+    - py:method:kernel.policy.EvolutionPolicy.__init__
+    - py:method:kernel.policy.EvolutionPolicy.allow_evolution
+  kernel/proposals.py:
+    module: kernel.proposals
+    purpose: ''
+    notes: []
+    imports:
+    - from pathlib import Path
+    - import yaml
+    units:
+    - py:module:kernel.proposals
+    - py:class:kernel.proposals.ProposalManager
+    - py:method:kernel.proposals.ProposalManager.__init__
+    - py:method:kernel.proposals.ProposalManager.list_proposals
+    - py:method:kernel.proposals.ProposalManager.approve
+    - py:method:kernel.proposals.ProposalManager.reject
+  kernel/evolve.py:
+    module: kernel.evolve
+    purpose: ''
+    notes: []
+    imports:
+    - from copy import deepcopy
+    - from datetime import datetime
+    - from pathlib import Path
+    - import yaml
+    - from kernel.registry import AgentSpec
+    - from kernel.governance import Governance
+    - from kernel.approval import pause_for_approval
+    units:
+    - py:module:kernel.evolve
+    - py:function:kernel.evolve.base_agent_id
+    - py:function:kernel.evolve.bump_version
+    - py:function:kernel.evolve.deep_update
+    - py:function:kernel.evolve.evolve_agent
+  kernel/evolver.py:
+    module: kernel.evolver
+    purpose: Core orchestration/runtime module (high leverage).
+    notes:
+    - Core orchestration/runtime module (high leverage).
+    imports:
+    - from typing import Dict, Any
+    - from kernel.registry import AgentSpec
+    - from kernel.evolve import evolve_agent, base_agent_id
+    - from kernel.mutator import Mutator
+    - from kernel.policy import EvolutionPolicy
+    - from kernel.pruner import Pruner
+    - from kernel.approval import pause_for_approval
+    units:
+    - py:module:kernel.evolver
+    - py:class:kernel.evolver.Evolver
+    - py:method:kernel.evolver.Evolver.__init__
+    - py:method:kernel.evolver.Evolver.evolve
+  kernel/context.py:
+    module: kernel.context
+    purpose: ''
+    notes: []
+    imports:
+    - from pathlib import Path
+    - from typing import Dict, Any
+    - from kernel.inspector import ProjectInspector
+    units:
+    - py:module:kernel.context
+    - py:function:kernel.context.build_project_context
+  kernel/inspector.py:
+    module: kernel.inspector
+    purpose: ''
+    notes: []
+    imports:
+    - from __future__ import annotations
+    - import ast
+    - from dataclasses import dataclass
+    - from pathlib import Path
+    - from typing import Dict, List, Optional
+    units:
+    - py:module:kernel.inspector
+    - py:class:kernel.inspector.ProjectInspector
+    - py:method:kernel.inspector.ProjectInspector.__init__
+    - py:method:kernel.inspector.ProjectInspector.scan
+    - py:method:kernel.inspector.ProjectInspector.read
+    - py:method:kernel.inspector.ProjectInspector._depth
+    - py:method:kernel.inspector.ProjectInspector.inspect_python_symbols
+    - py:class:kernel.inspector.SymbolInfo
+    - py:class:kernel.inspector.SymbolPointer
+    - py:function:kernel.inspector._collect_calls
+    - py:function:kernel.inspector._derive_summary
+    - py:function:kernel.inspector._extract_signature
+    - py:function:kernel.inspector._first_line
+    - py:function:kernel.inspector._leading_comment
+  kernel/pricing.py:
+    module: kernel.pricing
+    purpose: ''
+    notes: []
+    imports:
+    - from dataclasses import dataclass
+    - from typing import Dict
+    units:
+    - py:module:kernel.pricing
+    - py:const:kernel.pricing.GEMINI_PRICING
+    - py:const:kernel.pricing.OPENAI_PRICING
+    - py:const:kernel.pricing.PRICING_REGISTRY
+    - py:class:kernel.pricing.ModelPricing
+    - py:function:kernel.pricing.compute_cost_usd
+    - py:function:kernel.pricing.get_model_pricing

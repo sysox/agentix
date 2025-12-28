@@ -1,0 +1,723 @@
+version: '0.1'
+generated_from: docs/CODE_INDEX.json
+scope: callables/classes in spine modules
+symbols:
+  py:function:kernel.evolve.evolve_agent:
+    kind: function
+    file: kernel/evolve.py
+    signature: (spec, mutation, run, agents_dir) -> AgentSpec
+    params:
+    - name: spec
+    - name: mutation
+    - name: run
+    - name: agents_dir
+    desc_short: Create a new evolved agent spec from an existing one.
+    leaf: null
+  py:function:kernel.inspector._derive_summary:
+    kind: function
+    file: kernel/inspector.py
+    signature: (doc, comment, calls, fallback) -> str
+    params:
+    - name: doc
+    - name: comment
+    - name: calls
+    - name: fallback
+    desc_short: Function `kernel.inspector._derive_summary`.
+    leaf: null
+  py:method:kernel.llm.LLM._stub:
+    kind: method
+    file: kernel/llm.py
+    signature: (self, prompt) -> str
+    params:
+    - name: self
+    - name: prompt
+    desc_short: Deterministic stub used for development and testing.
+    leaf: null
+  py:method:kernel.run.Run.set_state:
+    kind: method
+    file: kernel/run.py
+    signature: (self, new_state) -> None
+    params:
+    - name: self
+    - name: new_state
+    desc_short: Method `kernel.run.Run.set_state`.
+    leaf: null
+  py:class:kernel.agent.Agent:
+    kind: class
+    file: kernel/agent.py
+    signature: null
+    params: []
+    desc_short: Class `Agent`.
+    bases: []
+    decorators: []
+    leaf: null
+  py:method:kernel.registry.Registry.__init__:
+    kind: method
+    file: kernel/registry.py
+    signature: (self, agents_dir)
+    params:
+    - name: self
+    - name: agents_dir
+    desc_short: Method `kernel.registry.Registry.__init__`.
+    leaf: null
+  py:class:kernel.action_gate.ActionRequired:
+    kind: class
+    file: kernel/action_gate.py
+    signature: null
+    params: []
+    desc_short: Raised when an agent requests a system action
+    bases:
+    - Exception
+    decorators: []
+    leaf: null
+  py:function:kernel.run_store._json_default:
+    kind: function
+    file: kernel/run_store.py
+    signature: (obj)
+    params:
+    - name: obj
+    desc_short: Safe JSON encoding for dataclasses, enums, datetimes, and unknown
+      objects.
+    leaf: null
+  py:method:kernel.proposals.ProposalManager.list_proposals:
+    kind: method
+    file: kernel/proposals.py
+    signature: (self)
+    params:
+    - name: self
+    desc_short: Method `kernel.proposals.ProposalManager.list_proposals`.
+    leaf: null
+  py:method:kernel.supervisor.Supervisor._is_safe_agent_yaml_proposal:
+    kind: method
+    file: kernel/supervisor.py
+    signature: (self, agent_id) -> bool
+    params:
+    - name: self
+    - name: agent_id
+    desc_short: 'Auto-approve policy:'
+    leaf: null
+  py:function:kernel.pricing.get_model_pricing:
+    kind: function
+    file: kernel/pricing.py
+    signature: (model_name) -> ModelPricing
+    params:
+    - name: model_name
+    desc_short: Lookup pricing for a model.
+    leaf: null
+  py:method:kernel.run_store.RunStore.__init__:
+    kind: method
+    file: kernel/run_store.py
+    signature: (self, runs_dir)
+    params:
+    - name: self
+    - name: runs_dir
+    desc_short: Method `kernel.run_store.RunStore.__init__`.
+    leaf: null
+  py:method:kernel.inspector.ProjectInspector.__init__:
+    kind: method
+    file: kernel/inspector.py
+    signature: (self, project_root)
+    params:
+    - name: self
+    - name: project_root
+    desc_short: Method `kernel.inspector.ProjectInspector.__init__`.
+    leaf: null
+  py:function:kernel.inspector._collect_calls:
+    kind: function
+    file: kernel/inspector.py
+    signature: (node) -> List[str]
+    params:
+    - name: node
+    desc_short: Function `kernel.inspector._collect_calls`.
+    leaf: null
+  py:method:kernel.evolver.Evolver.__init__:
+    kind: method
+    file: kernel/evolver.py
+    signature: (self)
+    params:
+    - name: self
+    desc_short: Method `kernel.evolver.Evolver.__init__`.
+    leaf: null
+  py:method:kernel.runner.Runner.execute:
+    kind: method
+    file: kernel/runner.py
+    signature: (self)
+    params:
+    - name: self
+    desc_short: Method `kernel.runner.Runner.execute`.
+    leaf: null
+  py:method:kernel.supervisor.Supervisor.get_pending_action:
+    kind: method
+    file: kernel/supervisor.py
+    signature: (self, run)
+    params:
+    - name: self
+    - name: run
+    desc_short: Return pending ActionRequest if present.
+    leaf: null
+  py:class:kernel.run.RunConstraints:
+    kind: class
+    file: kernel/run.py
+    signature: null
+    params: []
+    desc_short: Constraints under which the run executes.
+    bases: []
+    decorators:
+    - dataclass
+    leaf: null
+  py:method:kernel.supervisor.Supervisor.approve:
+    kind: method
+    file: kernel/supervisor.py
+    signature: (self, agent_id)
+    params:
+    - name: self
+    - name: agent_id
+    desc_short: Method `kernel.supervisor.Supervisor.approve`.
+    leaf: null
+  py:method:kernel.supervisor.Supervisor.__init__:
+    kind: method
+    file: kernel/supervisor.py
+    signature: (self)
+    params:
+    - name: self
+    desc_short: Method `kernel.supervisor.Supervisor.__init__`.
+    leaf: null
+  py:class:kernel.actions.ActionRequest:
+    kind: class
+    file: kernel/actions.py
+    signature: null
+    params: []
+    desc_short: A request for a system-level action.
+    bases: []
+    decorators:
+    - dataclass(frozen=True)
+    leaf: null
+  py:method:kernel.inspector.ProjectInspector.inspect_python_symbols:
+    kind: method
+    file: kernel/inspector.py
+    signature: (self, files) -> List[SymbolInfo]
+    params:
+    - name: self
+    - name: files
+    desc_short: Given already-read files (from read()),
+    leaf: null
+  py:method:kernel.governance.Governance.load:
+    kind: method
+    file: kernel/governance.py
+    signature: (cls) -> 'Governance'
+    params:
+    - name: cls
+    desc_short: Method `kernel.governance.Governance.load`.
+    leaf: null
+  py:function:kernel.evolve.base_agent_id:
+    kind: function
+    file: kernel/evolve.py
+    signature: (agent_id) -> str
+    params:
+    - name: agent_id
+    desc_short: 'Strip version suffix: coder_v0.3 -> coder'
+    leaf: null
+  py:method:kernel.registry.Registry.load:
+    kind: method
+    file: kernel/registry.py
+    signature: (self, agent_id) -> AgentSpec
+    params:
+    - name: self
+    - name: agent_id
+    desc_short: Load an exact agent spec from agents/<agent_id>.yaml
+    leaf: null
+  py:class:kernel.proposals.ProposalManager:
+    kind: class
+    file: kernel/proposals.py
+    signature: null
+    params: []
+    desc_short: Class `ProposalManager`.
+    bases: []
+    decorators: []
+    leaf: null
+  py:function:kernel.context.build_project_context:
+    kind: function
+    file: kernel/context.py
+    signature: (project_root, max_depth) -> Dict[str, Any]
+    params:
+    - name: project_root
+    - name: max_depth
+    desc_short: Read-only, bounded project context for LLM consumption.
+    leaf: null
+  py:class:kernel.registry.Registry:
+    kind: class
+    file: kernel/registry.py
+    signature: null
+    params: []
+    desc_short: Loads agent specifications from YAML files in agents/.
+    bases: []
+    decorators: []
+    leaf: null
+  py:method:kernel.inspector.ProjectInspector.scan:
+    kind: method
+    file: kernel/inspector.py
+    signature: (self, max_depth) -> List[Path]
+    params:
+    - name: self
+    - name: max_depth
+    desc_short: Method `kernel.inspector.ProjectInspector.scan`.
+    leaf: null
+  py:method:kernel.llm.LLM.__init__:
+    kind: method
+    file: kernel/llm.py
+    signature: (self)
+    params:
+    - name: self
+    desc_short: Method `kernel.llm.LLM.__init__`.
+    leaf: null
+  py:function:kernel.inspector._leading_comment:
+    kind: function
+    file: kernel/inspector.py
+    signature: (lines, start, max_lines) -> str
+    params:
+    - name: lines
+    - name: start
+    - name: max_lines
+    desc_short: Extract a small leading '#' comment block after a def/class line.
+    leaf: null
+  py:function:kernel.inspector._extract_signature:
+    kind: function
+    file: kernel/inspector.py
+    signature: (fn) -> str
+    params:
+    - name: fn
+    desc_short: Function `kernel.inspector._extract_signature`.
+    leaf: null
+  py:method:kernel.governance.Governance.__init__:
+    kind: method
+    file: kernel/governance.py
+    signature: (self, data)
+    params:
+    - name: self
+    - name: data
+    desc_short: Method `kernel.governance.Governance.__init__`.
+    leaf: null
+  py:method:kernel.supervisor.Supervisor.can_resume:
+    kind: method
+    file: kernel/supervisor.py
+    signature: (self, run) -> bool
+    params:
+    - name: self
+    - name: run
+    desc_short: Method `kernel.supervisor.Supervisor.can_resume`.
+    leaf: null
+  py:function:kernel.registry.load_agent:
+    kind: function
+    file: kernel/registry.py
+    signature: (agent_id) -> Agent
+    params:
+    - name: agent_id
+    desc_short: Load the best available version of an agent and return a runnable
+      Agent.
+    leaf: null
+  py:function:kernel.pricing.compute_cost_usd:
+    kind: function
+    file: kernel/pricing.py
+    signature: (model_name, input_tokens, output_tokens) -> float
+    params:
+    - name: model_name
+    - name: input_tokens
+    - name: output_tokens
+    desc_short: Compute exact USD cost for a model call based on token usage.
+    leaf: null
+  py:class:kernel.inspector.ProjectInspector:
+    kind: class
+    file: kernel/inspector.py
+    signature: null
+    params: []
+    desc_short: Read-only, bounded inspection of the project directory.
+    bases: []
+    decorators: []
+    leaf: null
+  py:class:kernel.pricing.ModelPricing:
+    kind: class
+    file: kernel/pricing.py
+    signature: null
+    params: []
+    desc_short: Class `ModelPricing`.
+    bases: []
+    decorators:
+    - dataclass(frozen=True)
+    leaf: null
+  py:method:kernel.governance.Governance.is_allowed:
+    kind: method
+    file: kernel/governance.py
+    signature: (self, agent_id) -> bool
+    params:
+    - name: self
+    - name: agent_id
+    desc_short: Check agent allow/block lists (legacy behavior).
+    leaf: null
+  py:method:kernel.inspector.ProjectInspector._depth:
+    kind: method
+    file: kernel/inspector.py
+    signature: (self, path) -> int
+    params:
+    - name: self
+    - name: path
+    desc_short: Method `kernel.inspector.ProjectInspector._depth`.
+    leaf: null
+  py:method:kernel.governance.Governance._derive_autonomy_mode:
+    kind: method
+    file: kernel/governance.py
+    signature: (legacy_mode) -> str
+    params:
+    - name: legacy_mode
+    desc_short: Map legacy evolution.mode to autonomy_mode.
+    leaf: null
+  py:class:kernel.runner.Runner:
+    kind: class
+    file: kernel/runner.py
+    signature: null
+    params: []
+    desc_short: Class `Runner`.
+    bases: []
+    decorators: []
+    leaf: null
+  py:method:kernel.runner.Runner.__init__:
+    kind: method
+    file: kernel/runner.py
+    signature: (self, agent, run)
+    params:
+    - name: self
+    - name: agent
+    - name: run
+    desc_short: Method `kernel.runner.Runner.__init__`.
+    leaf: null
+  py:class:kernel.llm.LLM:
+    kind: class
+    file: kernel/llm.py
+    signature: null
+    params: []
+    desc_short: Unified LLM interface.
+    bases: []
+    decorators: []
+    leaf: null
+  py:method:kernel.supervisor.Supervisor.reject:
+    kind: method
+    file: kernel/supervisor.py
+    signature: (self, agent_id)
+    params:
+    - name: self
+    - name: agent_id
+    desc_short: Method `kernel.supervisor.Supervisor.reject`.
+    leaf: null
+  py:method:kernel.action_gate.ActionRequired.__init__:
+    kind: method
+    file: kernel/action_gate.py
+    signature: (self, request)
+    params:
+    - name: self
+    - name: request
+    desc_short: Method `kernel.action_gate.ActionRequired.__init__`.
+    leaf: null
+  py:method:kernel.proposals.ProposalManager.reject:
+    kind: method
+    file: kernel/proposals.py
+    signature: (self, agent_id)
+    params:
+    - name: self
+    - name: agent_id
+    desc_short: Method `kernel.proposals.ProposalManager.reject`.
+    leaf: null
+  py:function:kernel.approval.pause_for_approval:
+    kind: function
+    file: kernel/approval.py
+    signature: (run)
+    params:
+    - name: run
+    desc_short: Put the run into WAITING_FOR_APPROVAL state and stop execution.
+    leaf: null
+  py:method:kernel.registry.Registry.load_best:
+    kind: method
+    file: kernel/registry.py
+    signature: (self, agent_id) -> AgentSpec
+    params:
+    - name: self
+    - name: agent_id
+    desc_short: Load the latest evolved version if it exists,
+    leaf: null
+  py:function:kernel.inspector._first_line:
+    kind: function
+    file: kernel/inspector.py
+    signature: (text, limit) -> str
+    params:
+    - name: text
+    - name: limit
+    desc_short: Function `kernel.inspector._first_line`.
+    leaf: null
+  py:method:kernel.evolver.Evolver.evolve:
+    kind: method
+    file: kernel/evolver.py
+    signature: (self, spec, evaluation, run)
+    params:
+    - name: self
+    - name: spec
+    - name: evaluation
+    - name: run
+    desc_short: Perform evolution step.
+    leaf: null
+  py:method:kernel.llm.LLM.complete:
+    kind: method
+    file: kernel/llm.py
+    signature: (self, prompt) -> str
+    params:
+    - name: self
+    - name: prompt
+    desc_short: Method `kernel.llm.LLM.complete`.
+    leaf: null
+  py:class:kernel.inspector.SymbolInfo:
+    kind: class
+    file: kernel/inspector.py
+    signature: null
+    params: []
+    desc_short: Class `SymbolInfo`.
+    bases: []
+    decorators:
+    - dataclass
+    leaf: null
+  py:class:kernel.governance.Governance:
+    kind: class
+    file: kernel/governance.py
+    signature: null
+    params: []
+    desc_short: Loads governance.yaml and exposes evolution/autonomy controls.
+    bases: []
+    decorators: []
+    leaf: null
+  py:class:kernel.run.Run:
+    kind: class
+    file: kernel/run.py
+    signature: null
+    params: []
+    desc_short: A single supervised execution of agentix.
+    bases: []
+    decorators:
+    - dataclass
+    leaf: null
+  py:class:kernel.supervisor.Supervisor:
+    kind: class
+    file: kernel/supervisor.py
+    signature: null
+    params: []
+    desc_short: Human-facing control layer.
+    bases: []
+    decorators: []
+    leaf: null
+  py:method:kernel.inspector.ProjectInspector.read:
+    kind: method
+    file: kernel/inspector.py
+    signature: (self, files) -> Dict[str, str]
+    params:
+    - name: self
+    - name: files
+    desc_short: Method `kernel.inspector.ProjectInspector.read`.
+    leaf: null
+  py:method:kernel.run_store.RunStore.save:
+    kind: method
+    file: kernel/run_store.py
+    signature: (self, run) -> Path
+    params:
+    - name: self
+    - name: run
+    desc_short: Method `kernel.run_store.RunStore.save`.
+    leaf: null
+  py:method:kernel.llm.LLM._openai:
+    kind: method
+    file: kernel/llm.py
+    signature: (self, prompt) -> str
+    params:
+    - name: self
+    - name: prompt
+    desc_short: Real OpenAI backend.
+    leaf: null
+  py:method:kernel.agent.Agent.__init__:
+    kind: method
+    file: kernel/agent.py
+    signature: (self, spec)
+    params:
+    - name: self
+    - name: spec
+    desc_short: Method `kernel.agent.Agent.__init__`.
+    leaf: null
+  py:class:kernel.run_store.RunStore:
+    kind: class
+    file: kernel/run_store.py
+    signature: null
+    params: []
+    desc_short: Persists Run objects to disk for auditability and recovery.
+    bases: []
+    decorators: []
+    leaf: null
+  py:class:kernel.inspector.SymbolPointer:
+    kind: class
+    file: kernel/inspector.py
+    signature: null
+    params: []
+    desc_short: Class `SymbolPointer`.
+    bases: []
+    decorators:
+    - dataclass
+    leaf: null
+  py:class:kernel.evolver.Evolver:
+    kind: class
+    file: kernel/evolver.py
+    signature: null
+    params: []
+    desc_short: Class `Evolver`.
+    bases: []
+    decorators: []
+    leaf: null
+  py:method:kernel.policy.EvolutionPolicy.__init__:
+    kind: method
+    file: kernel/policy.py
+    signature: (self, min_score, max_versions, min_component)
+    params:
+    - name: self
+    - name: min_score
+    - name: max_versions
+    - name: min_component
+    desc_short: Method `kernel.policy.EvolutionPolicy.__init__`.
+    leaf: null
+  py:method:kernel.supervisor.Supervisor.start_run:
+    kind: method
+    file: kernel/supervisor.py
+    signature: (self, agent, run) -> Run
+    params:
+    - name: self
+    - name: agent
+    - name: run
+    desc_short: Method `kernel.supervisor.Supervisor.start_run`.
+    leaf: null
+  py:method:kernel.proposals.ProposalManager.__init__:
+    kind: method
+    file: kernel/proposals.py
+    signature: (self, agents_dir)
+    params:
+    - name: self
+    - name: agents_dir
+    desc_short: Method `kernel.proposals.ProposalManager.__init__`.
+    leaf: null
+  py:class:kernel.policy.EvolutionPolicy:
+    kind: class
+    file: kernel/policy.py
+    signature: null
+    params: []
+    desc_short: Hard constraints for agent evolution.
+    bases: []
+    decorators: []
+    leaf: null
+  py:function:kernel.evolve.bump_version:
+    kind: function
+    file: kernel/evolve.py
+    signature: (version) -> str
+    params:
+    - name: version
+    desc_short: Function `kernel.evolve.bump_version`.
+    leaf: null
+  py:method:kernel.supervisor.Supervisor.list_proposals:
+    kind: method
+    file: kernel/supervisor.py
+    signature: (self)
+    params:
+    - name: self
+    desc_short: Method `kernel.supervisor.Supervisor.list_proposals`.
+    leaf: null
+  py:function:kernel.run.create_run:
+    kind: function
+    file: kernel/run.py
+    signature: (task, constraints) -> Run
+    params:
+    - name: task
+    - name: constraints
+    desc_short: Factory for creating a new Run.
+    leaf: null
+  py:method:kernel.run_store.RunStore.load:
+    kind: method
+    file: kernel/run_store.py
+    signature: (self, run_id) -> Dict[str, Any]
+    params:
+    - name: self
+    - name: run_id
+    desc_short: Method `kernel.run_store.RunStore.load`.
+    leaf: null
+  py:class:kernel.approval.ApprovalRequired:
+    kind: class
+    file: kernel/approval.py
+    signature: null
+    params: []
+    desc_short: Raised to pause execution until human approval.
+    bases:
+    - Exception
+    decorators: []
+    leaf: null
+  py:method:kernel.supervisor.Supervisor.maybe_auto_approve:
+    kind: method
+    file: kernel/supervisor.py
+    signature: (self) -> list[str]
+    params:
+    - name: self
+    desc_short: Auto-approve pending proposals if governance allows.
+    leaf: null
+  py:method:kernel.agent.Agent.call_llm:
+    kind: method
+    file: kernel/agent.py
+    signature: (self, task, context)
+    params:
+    - name: self
+    - name: task
+    - name: context
+    desc_short: Method `kernel.agent.Agent.call_llm`.
+    leaf: null
+  py:method:kernel.policy.EvolutionPolicy.allow_evolution:
+    kind: method
+    file: kernel/policy.py
+    signature: (self, agent_id, evaluation, agents_dir) -> bool
+    params:
+    - name: self
+    - name: agent_id
+    - name: evaluation
+    - name: agents_dir
+    desc_short: Method `kernel.policy.EvolutionPolicy.allow_evolution`.
+    leaf: null
+  py:method:kernel.runner.Runner._run_agent:
+    kind: method
+    file: kernel/runner.py
+    signature: (self) -> dict
+    params:
+    - name: self
+    desc_short: Run the agent once, pass project context, and account for cost.
+    leaf: null
+  py:function:kernel.evolve.deep_update:
+    kind: function
+    file: kernel/evolve.py
+    signature: (target, patch)
+    params:
+    - name: target
+    - name: patch
+    desc_short: Recursively update dicts.
+    leaf: null
+  py:method:kernel.proposals.ProposalManager.approve:
+    kind: method
+    file: kernel/proposals.py
+    signature: (self, agent_id)
+    params:
+    - name: self
+    - name: agent_id
+    desc_short: Method `kernel.proposals.ProposalManager.approve`.
+    leaf: null
+  py:class:kernel.run.RunState:
+    kind: class
+    file: kernel/run.py
+    signature: null
+    params: []
+    desc_short: Class `RunState`.
+    bases:
+    - Enum
+    decorators: []
+    leaf: null
